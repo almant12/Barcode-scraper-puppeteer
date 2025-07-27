@@ -11,20 +11,21 @@ export async function scrapeTarracoProduct(barcode) {
     barcode
   )}&submit_search=OK`;
 
-  await page.goto(searchUrl, { waitUntil: "domcontentloaded" });
+  try {
+    await page.goto(searchUrl, { waitUntil: "domcontentloaded" });
 
-  const productLink = await extractLink(page);
+    const productLink = await extractLink(page);
 
-  if (!productLink) {
+    if (!productLink) {
+      throw new Error("Product not found"); // Or throw new NotFoundError();
+    }
+
+    await page.goto(productLink, { waitUntil: "networkidle2" });
+
+    const product = await extractProductFromPage(page);
+
+    return { ...product, productLink };
+  } finally {
     await browser.close();
-    throw new Error("Product not found for this barcode");
   }
-
-  await page.goto(productLink, { waitUntil: "networkidle2" });
-
-  const product = await extractProductFromPage(page);
-
-  await browser.close();
-
-  return { ...product, productLink };
 }

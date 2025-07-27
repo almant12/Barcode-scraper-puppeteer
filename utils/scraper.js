@@ -44,6 +44,7 @@ export async function extractProductFromPage(page) {
 
     const images = Array.from(new Set([...highQualityThumbs]));
     return {
+      existProduct: !document.querySelector(".alert.alert"),
       title: getText("h1[itemprop='name']"),
       reference: getText("#product_reference span[itemprop='sku']"),
       condition: getText("#product_condition .editable"),

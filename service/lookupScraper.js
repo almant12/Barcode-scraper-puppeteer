@@ -14,30 +14,28 @@ export async function scrapeLookupProduct(barcode) {
 
   await browser.close();
 
-  return {...product, url};
+  return { ...product, url };
 }
 
 async function extractProductInfo(page) {
   return await page.evaluate(() => {
     const details = document.querySelector(".product-details");
-
-    const title = details?.querySelector("h4").innerText.trim() || null;
-    const ean = details?.querySelector("h1").innerText.trim() || null;
+    const title = details?.querySelector("h4")?.innerText.trim() || null;
+    const ean = details?.querySelector("h1")?.innerText.trim() || null;
     const barcode =
       details
         ?.querySelector(".product-text-label .product-text")
-        .innerText.trim() || null;
+        ?.innerText.trim() || null;
 
     const imgs = document.querySelectorAll("#largeProductImage img");
     const images = Array.from(imgs).map((img) => img.src);
+
     const descriptionDiv = [
       ...document.querySelectorAll("div.product-text-label"),
     ].find((div) => div.textContent.trim().startsWith("Description:"));
 
-    if (!descriptionDiv) return null;
-
     const description =
-      descriptionDiv.querySelector("span.product-text").innerText.trim() ||
+      descriptionDiv?.querySelector("span.product-text")?.innerText.trim() ||
       null;
 
     return {
